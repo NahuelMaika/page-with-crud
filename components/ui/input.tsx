@@ -1,20 +1,51 @@
 import * as React from "react"
-import { Input as InputPrimitive } from "@base-ui/react/input"
-
 import { cn } from "@/lib/utils"
+import { Eye, EyeOff } from "lucide-react"
 
-function Input({ className, type, ...props }: React.ComponentProps<"input">) {
-  return (
-    <InputPrimitive
-      type={type}
-      data-slot="input"
-      className={cn(
-        "h-8 w-full min-w-0 rounded-lg border border-input bg-transparent px-2.5 py-1 text-base transition-colors outline-none file:inline-flex file:h-6 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-input/50 disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 md:text-sm dark:bg-input/30 dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40",
-        className
-      )}
-      {...props}
-    />
-  )
-}
+export interface InputProps
+  extends React.InputHTMLAttributes<HTMLInputElement> { }
+
+const Input = React.forwardRef<HTMLInputElement, InputProps>(
+  ({ className, type, ...props }, ref) => {
+    const [showPassword, setShowPassword] = React.useState(false)
+
+    const togglePasswordVisibility = () => {
+      setShowPassword(!showPassword)
+    }
+
+    // Determinar el tipo de input a mostrar
+    const inputType = type === "password" && showPassword ? "text" : type
+
+    return (
+      <div className="relative">
+        <input
+          type={inputType}
+          className={cn(
+            "flex h-10 bg-background w-full rounded-md border border-input px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-purple-200 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+            type === "password" ? "pr-10" : "",
+            className
+          )}
+          ref={ref}
+          {...props}
+        />
+        {type === "password" && (
+          <button
+            type="button"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            onClick={togglePasswordVisibility}
+            aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+          >
+            {showPassword ? (
+              <EyeOff className="h-4 w-4" />
+            ) : (
+              <Eye className="h-4 w-4" />
+            )}
+          </button>
+        )}
+      </div>
+    )
+  }
+)
+Input.displayName = "Input"
 
 export { Input }
