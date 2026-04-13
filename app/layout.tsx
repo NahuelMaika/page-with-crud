@@ -31,7 +31,7 @@ export default function RootLayout({
       lang="en"
       className={cn("dark", "font-sans", inter.variable)}
     >
-      <body className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>{children}<Toaster/></body>
+      <body>{children}<Toaster/></body>
     </html>
   );
 }
