@@ -59,7 +59,7 @@ const SignUpForm = ({ setTypeSelected }: AuthFormProps) => {
             if (response.success) {
                 toast.success(`Hola, ${user.name}. Te hemos enviado un correo para verificar tu cuenta`, { duration: 4000, icon: '👋' });
                 setTypeSelected('sign-in');
-                form.reset();
+                form.reset(); 
             } 
 
         } catch (error: any) {

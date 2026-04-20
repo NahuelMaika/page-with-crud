@@ -16,6 +16,7 @@ import { useState } from "react";
 import { LoaderCircle } from "lucide-react";
 import toast from "react-hot-toast";
 import { AuthFormProps } from "./AuthForm";
+import { login } from "@/actions/auth/auth";
 
 
 const SignInForm = ({ setTypeSelected }: AuthFormProps) => {
@@ -47,9 +48,10 @@ const SignInForm = ({ setTypeSelected }: AuthFormProps) => {
         setisLoading(true);
 
         try {
+      
+            console.log(data);
+            
 
-              console.log(data);
-         
         } catch (error: any) {
             toast.error(error.message, { duration: 2500 });
         } finally {
@@ -197,7 +199,7 @@ const SignInForm = ({ setTypeSelected }: AuthFormProps) => {
                 <p className="text-center text-sm text-white mt-4">
                     {"¿No tienes cuenta?  "}
                     <span
-                        onClick={() => setTypeSelected('sign-up')}
+                        onClick={() => setTypeSelected('sign-up')}  
                         className="underline underline-offset-4 hover:text-primary cursor-pointer"
                     >
                         Regístrate
