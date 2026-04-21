@@ -17,6 +17,8 @@ import { LoaderCircle } from "lucide-react";
 import toast from "react-hot-toast";
 import { AuthFormProps } from "./AuthForm";
 import { login } from "@/actions/auth/auth";
+import { redirect } from "next/navigation";
+import { router } from "next/client";
 
 
 const SignInForm = ({ setTypeSelected }: AuthFormProps) => {
@@ -49,8 +51,13 @@ const SignInForm = ({ setTypeSelected }: AuthFormProps) => {
 
         try {
       
-            console.log(data);
-            
+            const response = await login(data);
+            console.log(response);
+            if(response.success) {
+                window.location.href = '/dashboard';
+            } else {
+                toast.error(response.error || 'Error al iniciar sesión', { duration: 2500 });
+            }
 
         } catch (error: any) {
             toast.error(error.message, { duration: 2500 });

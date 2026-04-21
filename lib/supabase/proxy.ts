@@ -1,4 +1,3 @@
-import { getUser } from '@/actions/auth/get-user';
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
@@ -37,17 +36,23 @@ export async function updateSession(request: NextRequest) {
 
   // IMPORTANT: If you remove getClaims() and you use server-side rendering
   // with the Supabase client, your users may be randomly logged out.
-  //await supabase.auth.getClaims()
+  await supabase.auth.getClaims()
   
-  const user = await getUser();
-  const protectedRoutes = ['/dashboard','/profile','/update-password'];
-  if(!user && protectedRoutes.includes(request.nextUrl.pathname)) {
-    return NextResponse.redirect(new URL('/login', request.url));
-  }
-  if(user && request.nextUrl.pathname === '/login') {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const pathname = request.nextUrl.pathname
+
+  const protectedRoutes = ['/dashboard', '/profile', '/update-password']
+
+  if (!user && protectedRoutes.includes(pathname)) {
+    return NextResponse.redirect(new URL('/login', request.url))
   }
 
+  if (user && pathname === '/login') {
+    return NextResponse.redirect(new URL('/dashboard', request.url))
+  }
 
   return supabaseResponse
 }
