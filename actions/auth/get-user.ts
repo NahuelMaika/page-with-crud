@@ -1,8 +1,10 @@
-import { createClient } from "@/lib/supabase/client";
+'use server'
+import { User } from "@/interfaces/user";
+import { createClient } from "@/lib/supabase/server";
 
-export const getUser = async () => {
+export const getUser = async (): Promise<User | null> => {
  try{
-    const supabase = createClient()
+    const supabase = await createClient()
     const { data:{user:session } } = await supabase.auth.getUser();
   
     if(!session) {
@@ -10,12 +12,13 @@ export const getUser = async () => {
     }
   
     const userId = session.id;
+
     const { data: userData, error:userError } = await supabase.from('profiles').select('*').eq('id', userId).single();
     if(userError) {
       console.error('Error fetching user:', userError);
       return null;
     }
-    console.log('User fetched successfully:', userData);
+    
     return userData;
     
  }catch(error){
