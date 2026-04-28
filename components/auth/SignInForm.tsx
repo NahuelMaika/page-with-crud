@@ -17,9 +17,6 @@ import { LoaderCircle } from "lucide-react";
 import toast from "react-hot-toast";
 import { AuthFormProps } from "./AuthForm";
 import { login } from "@/actions/auth/auth";
-import { redirect } from "next/navigation";
-import { router } from "next/client";
-
 
 const SignInForm = ({ setTypeSelected }: AuthFormProps) => {
 
@@ -59,8 +56,9 @@ const SignInForm = ({ setTypeSelected }: AuthFormProps) => {
                 toast.error(response.error || 'Error al iniciar sesión', { duration: 2500 });
             }
 
-        } catch (error: any) {
-            toast.error(error.message, { duration: 2500 });
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Error al iniciar sesión';
+            toast.error(message, { duration: 2500 });
         } finally {
             setisLoading(false);
         }

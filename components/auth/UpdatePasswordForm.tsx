@@ -54,8 +54,9 @@ const UpdatePasswordForm = () => {
             } else {
                 toast.error(response.error || 'Error al actualizar la contraseña', { duration: 2500 });
             }
-        } catch (error: any) {
-            toast.error(error.message, { duration: 2500 });
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Error al actualizar la contraseña';
+            toast.error(message, { duration: 2500 });
         } finally {
             setIsLoading(false);
         }

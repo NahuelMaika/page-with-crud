@@ -10,7 +10,7 @@ export async function updateAvatar(formData: FormData) {
   //1. Subir imagen al bucket de avatars
   const fileExt = file.name.split('.').pop();
   const filePath = `${userId}.${fileExt}`;
-  const { data, error: uploadError } = await supabase.storage.from('avatars').upload(filePath, file,{upsert: true, contentType: file.type});
+  const { error: uploadError } = await supabase.storage.from('avatars').upload(filePath, file,{upsert: true, contentType: file.type});
 
   if (uploadError) {
     throw new Error('Error al subir la imagen: ' + uploadError.message)

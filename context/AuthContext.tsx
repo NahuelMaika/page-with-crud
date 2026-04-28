@@ -3,7 +3,7 @@
 import { getUser } from "@/actions/auth/get-user";
 import { User } from "@/interfaces/user";
 import { createClient } from "@/lib/supabase/client";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
 
 export interface AuthContextType {
     user: User | null;
@@ -17,40 +17,34 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
-    const getUserData = async () => {
+    const getUserData = useCallback(async () => {
         setIsLoading(true);
         try {
             const userData = await getUser();
-            if(userData) {
-                setUser(userData);
-            } 
+            setUser(userData);
         } catch (error) {
             console.error('Error fetching user:', error);
         } finally {
             setIsLoading(false);
         }
-    }
+    }, []);
 
-    const authState = async () => {
+    useEffect(() => {
         const supabase = createClient();
-
-        supabase.auth.onAuthStateChange((event, session) => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
             const eventTypes = ['INITIAL_SESSION', 'USER_UPDATED', 'TOKEN_REFRESHED','PASSWORD_RECOVERY','SIGNED_OUT'];
 
             if(eventTypes.includes(event)) {
                 if(session) {
-                    getUserData();
+                    void getUserData();
                 } else {
                     setUser(null);
+                    setIsLoading(false);
                 }
             }
-
         });
-    }
-
-    useEffect(() => {
-        authState();
-    }, []);
+        return () => subscription.unsubscribe();
+    }, [getUserData]);
 
     return (
         <AuthContext.Provider value={{ user, isLoading, getUserData }}>
