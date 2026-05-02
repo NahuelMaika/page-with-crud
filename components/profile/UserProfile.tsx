@@ -1,6 +1,6 @@
 
 'use client'
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -65,21 +65,12 @@ const UserProfile: React.FC<UserProfileProps> = ({
 }) => {
 
     const { user, isLoading, getUserData} = useAuth();
-    const [profile, setProfile] = useState<UserProfileData | null>(user as UserProfileData);
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-
-
 
     const handleEditClick = () => {
         setIsEditDialogOpen(true);
         if (onEditProfile) onEditProfile();
     };
-
-    useEffect(() => {
-        if (user) {
-            setProfile(user);
-        }
-    }, [user]);
 
     if (isLoading) {
         return (
@@ -106,7 +97,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
         );
     }
 
-    if (!profile) {
+    if (!user) {
         return (
             <Card className={`w-full max-w-md ${className}`}>
                 <CardHeader>
@@ -136,17 +127,17 @@ const UserProfile: React.FC<UserProfileProps> = ({
                     <div>
                         <div className="flex flex-col justify-center items-center">
                             <Avatar className="h-24 w-24 border-4 border-background shadow-lg">
-                                {profile.avatar_url ? (
+                                {user.avatar_url ? (
                                     <Image
-                                        src={getImageUrl(profile.avatar_url)}
-                                        alt={profile.name || 'Usuario'}
+                                        src={getImageUrl(user.avatar_url)}
+                                        alt={user.name || 'Usuario'}
                                         className="object-cover"
                                         width={1000}
                                         height={1000}
                                     />
                                 ) : (
                                     <AvatarFallback className="text-lg bg-primary text-primary-foreground">
-                                        {getInitials(profile.name)}
+                                        {getInitials(user.name)}
                                     </AvatarFallback>
                                 )}
 
@@ -155,17 +146,17 @@ const UserProfile: React.FC<UserProfileProps> = ({
 
                         <div className="flex-1 text-center mt-4">
                             <h3 className="text-xl font-semibold">
-                                {profile.name || 'Usuario sin nombre'}
+                                {user.name || 'Usuario sin nombre'}
                             </h3>
                             <div className="flex flex-col items-center justify-center gap-2 mt-2 text-muted-foreground">
                                 <div className="flex items-center gap-2">
                                     <Mail className="h-4 w-4" />
-                                    <span className="text-sm">{profile.email || 'Sin email'}</span>
+                                    <span className="text-sm">{user.email || 'Sin email'}</span>
                                 </div>
-                                {profile.phone && (
+                                {user.phone && (
                                     <div className="flex items-center gap-2">
                                         <Phone className="h-4 w-4" />
-                                        <span className="text-sm">{profile.phone}</span>
+                                        <span className="text-sm">{user.phone}</span>
                                     </div>
                                 )}
                             </div>
@@ -195,7 +186,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
                             </Button>
 
 
-                            <Link href="/update-password" intermediate-link="true">
+                            <Link href="/update-password">
                                 <Button
                                     variant="outline"
                                     className="w-full justify-start h-14"
@@ -239,7 +230,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
                         Actualiza tu información de perfil. Haz click en guardar cuando hayas terminado.
                     </DialogDescription>
                     </DialogHeader>
-                    <AccountForm user={profile} onSuccess={() =>{ setIsEditDialogOpen(false); getUserData();}} />
+                    <AccountForm user={user} onSuccess={() =>{ setIsEditDialogOpen(false); getUserData();}} />
                 </DialogContent>
             </Dialog>                        
 

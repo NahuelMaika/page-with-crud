@@ -20,6 +20,7 @@ import PhoneInput from '@/components/profile/PhoneInput'
 import { updateAvatar } from '@/actions/auth/update_avatar';
 import { getImageUrl } from '@/lib/utils';
 import { updateProfile } from '@/actions/auth/update_profile';
+import type { User } from '@/interfaces/user';
 
 
 const profileSchema = z.object({
@@ -38,7 +39,7 @@ export default function AccountForm({
     user,
     onSuccess
 }: {
-    user: any;
+    user: User;
     onSuccess?: () => void
 }) {
 
@@ -122,9 +123,10 @@ export default function AccountForm({
                 toast.success('Avatar actualizado correctamente', { duration: 2500 })
             }
 
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Error al actualizar avatar:', error)
-            toast.error(error.message || 'Error al actualizar el avatar', { duration: 2500 })
+            const message = error instanceof Error ? error.message : 'Error al actualizar el avatar';
+            toast.error(message, { duration: 2500 })
         } finally {
             setIsLoadingImage(false)
             // Limpiar el input file
