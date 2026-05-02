@@ -62,16 +62,16 @@ const SignUpForm = ({ setTypeSelected }: AuthFormProps) => {
                 form.reset(); 
             } 
 
-        } catch (error: any) {
-            // Manejar errores específicos de Supabase
-            if (error.message.includes('User already registered')) {
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : '';
+            if (message.includes('User already registered')) {
                 toast.error('Este correo electrónico ya está registrado', { duration: 4000 });
-            } else if (error.message.includes('Password should be at least 6 characters')) {
+            } else if (message.includes('Password should be at least 6 characters')) {
                 toast.error('La contraseña debe tener al menos 6 caracteres', { duration: 4000 });
-            } else if (error.message.includes('Invalid email')) {
+            } else if (message.includes('Invalid email')) {
                 toast.error('Por favor ingresa un correo electrónico válido', { duration: 4000 });
             } else {
-                toast.error(error.message || 'Error al registrar el usuario', { duration: 4000 });
+                toast.error(message || 'Error al registrar el usuario', { duration: 4000 });
             }
 
         } finally {

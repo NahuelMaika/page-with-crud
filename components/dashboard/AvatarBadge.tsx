@@ -20,12 +20,17 @@ export const AvatarBadge = ({ name, avatar_url }: AvatarBadgeProps) => {
 
     return (
 
-        <Badge className='gap-2'>
-            <Avatar>
+        <Badge
+            variant="default"
+            className="h-auto min-h-0 gap-1.5 py-0.5 pl-0.5 pr-2.5"
+        >
+            <Avatar size="default">
                 <AvatarImage src={avatar_url || ''} />
-                <AvatarFallback className='text-neutral-500'>{getInitials(name)}</AvatarFallback>
+                <AvatarFallback className="text-neutral-500">{getInitials(name)}</AvatarFallback>
             </Avatar>
-            {name}
+            <span className="max-w-[10rem] truncate text-sm font-medium">
+                {name}
+            </span>
         </Badge>
 
     )
