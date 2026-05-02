@@ -1,9 +1,9 @@
-import { TasksNav } from "@/components/dashboard/TasksNav";
+import { TasksBoard } from "@/components/dashboard/TasksBoard";
 
 export default function DashboardPage() {
   return (
-    <>
-      <TasksNav />
-    </>
+    <div className="min-h-screen bg-background">
+      <TasksBoard />
+    </div>
   );
 }

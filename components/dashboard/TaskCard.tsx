@@ -15,16 +15,7 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import { useState } from 'react';
-
-interface Task {
-    id: string;
-    title: string;
-    description: string;
-    status: 'todo' | 'in-progress' | 'review' | 'done';
-    priority: 'low' | 'medium' | 'high';
-    created_at: number;
-    image: string | null;
-}
+import type { Task } from '@/interfaces/task';
 
 interface TaskCardProps {
     task: Task;
@@ -33,16 +24,16 @@ interface TaskCardProps {
 }
 
 const statusConfig = {
-    'todo': { color: 'bg-slate-100 text-slate-700 border-slate-200', label: 'Pendiente' },
-    'in-progress': { color: 'bg-blue-100 text-blue-700 border-blue-200', label: 'En curso' },
-    'review': { color: 'bg-amber-100 text-amber-700 border-amber-200', label: 'Revisión' },
-    'done': { color: 'bg-emerald-100 text-emerald-700 border-emerald-200', label: 'Completada' },
+    'todo': { color: 'border border-border bg-muted/50 text-foreground', label: 'Pendiente' },
+    'in-progress': { color: 'border border-sky-500/35 bg-sky-500/10 text-sky-300', label: 'En curso' },
+    'review': { color: 'border border-amber-500/35 bg-amber-500/10 text-amber-300', label: 'Revisión' },
+    'done': { color: 'border border-emerald-500/35 bg-emerald-500/10 text-emerald-300', label: 'Completada' },
 };
 
 const priorityConfig = {
-    'low': { color: 'text-blue-600 bg-blue-50', icon: <Clock size={18} />, label: 'Baja' },
-    'medium': { color: 'text-amber-600 bg-amber-50', icon: <AlertCircle size={18} />, label: 'Media' },
-    'high': { color: 'text-rose-600 bg-rose-50', icon: <AlertCircle size={18} />, label: 'Alta' },
+    'low': { wrapper: 'border border-sky-500/25 bg-sky-500/10', icon: <Clock size={18} className="text-sky-400" />, label: 'Baja' },
+    'medium': { wrapper: 'border border-amber-500/25 bg-amber-500/10', icon: <AlertCircle size={18} className="text-amber-400" />, label: 'Media' },
+    'high': { wrapper: 'border border-rose-500/25 bg-rose-500/10', icon: <AlertCircle size={18} className="text-rose-400" />, label: 'Alta' },
 };
 
 export function TaskCard({ task, onEdit, onDelete }: TaskCardProps) {
@@ -54,22 +45,21 @@ export function TaskCard({ task, onEdit, onDelete }: TaskCardProps) {
 
     return (
         <>
-            <Card className="group overflow-hidden border-none shadow-sm hover:shadow-xl transition-all duration-500 bg-card/50 backdrop-blur-sm flex flex-row md:flex-col h-auto md:h-full ring-1 ring-border/50 hover:ring-primary/20">
+            <Card className="group flex h-full min-h-0 min-w-0 w-full flex-col overflow-hidden rounded-xl border border-border bg-card py-0 shadow-sm transition-all duration-300 hover:border-primary/30 hover:shadow-md [&_[data-slot=card-header]]:gap-2">
 
-                {/* Content Container */}
-                <div className="flex flex-col flex-1 min-w-0">
+                <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
                     <CardHeader>
-                        <div className="flex items-center justify-between gap-2 mb-1">
-                            <Badge className={cn("flex items-center gap-1 px-1.5 py-0 text-[9px] uppercase font-bold", status.color)}>
+                        <div className="mb-1 flex items-center justify-between gap-2">
+                            <Badge className={cn("flex items-center gap-1 border px-1.5 py-0 text-[9px] font-bold uppercase", status.color)}>
                                 {status.label}
                             </Badge>
                         </div>
-                        <div className='flex justify-between items-center border-b border-white/10 pb-2 mb-2'>
-                            <div className='flex items-center gap-2 '>
+                        <div className='mb-2 flex items-center justify-between border-b border-border pb-2'>
+                            <div className={cn('flex items-center gap-2 rounded-lg p-1.5', priority.wrapper)}>
                                 {priority.icon}
                                 <div>
-                                    <p className='text-xs opacity-50'>Prioridad</p>
-                                    <div className='text-sm'>{priority.label}</div>
+                                    <p className='text-xs text-muted-foreground'>Prioridad</p>
+                                    <div className='text-sm font-medium text-foreground'>{priority.label}</div>
                                 </div>
                             </div>
 
@@ -121,7 +111,7 @@ export function TaskCard({ task, onEdit, onDelete }: TaskCardProps) {
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                className="h-8 w-8 md:h-7 md:w-7 rounded-full hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                                className="h-8 w-8 md:h-7 md:w-7 rounded-full hover:bg-muted hover:text-sky-400 transition-colors"
                                 onClick={() => onEdit(task)}
                             >
                                 <Edit size={14} />
@@ -129,7 +119,7 @@ export function TaskCard({ task, onEdit, onDelete }: TaskCardProps) {
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                className="h-8 w-8 md:h-7 md:w-7 rounded-full hover:bg-rose-50 hover:text-rose-600 transition-colors"
+                                className="h-8 w-8 md:h-7 md:w-7 rounded-full hover:bg-muted hover:text-rose-400 transition-colors"
                                 onClick={() => onDelete(task)}
                             >
                                 <Trash2 size={14} />
@@ -139,7 +129,6 @@ export function TaskCard({ task, onEdit, onDelete }: TaskCardProps) {
                 </div>
             </Card>
 
-            {/* Task Detail Dialog */}
             {/* Task Detail Dialog */}
             <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
                 <DialogContent className={`${task.image ? 'max-w-xl' : 'max-w-md'} w-[97vw]`}>
@@ -156,7 +145,7 @@ export function TaskCard({ task, onEdit, onDelete }: TaskCardProps) {
                                 <div>
                                     <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest mb-1.5 line-clamp-1">Prioridad</p>
                                     <div className="flex items-center gap-2">
-                                        <span className={cn("p-1.5 rounded-full", priority.color)}>{priority.icon}</span>
+                                        <span className={cn("flex rounded-full p-1.5", priority.wrapper)}>{priority.icon}</span>
                                         <span className="text-sm font-semibold">{priority.label}</span>
                                     </div>
                                 </div>

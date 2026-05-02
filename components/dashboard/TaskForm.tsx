@@ -17,18 +17,12 @@ import * as z from "zod";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FileInput } from './FileInput';
+import { createTask } from '@/actions/tasks/create_task';
+import { updateTask } from '@/actions/tasks/update_Task';
+import toast from 'react-hot-toast';
+import type { Task } from '@/interfaces/task';
 
-export type Status = 'todo' | 'in-progress' | 'review' | 'done';
-
-export interface Task {
-    id: string;
-    title: string;
-    description: string;
-    status: Status;
-    priority: 'low' | 'medium' | 'high';
-    created_at: number;
-    image: string | null;
-}
+export type Status = Task['status'];
 
 interface TaskFormProps {
     isOpen: boolean;
@@ -100,24 +94,34 @@ export function TaskForm({ isOpen, onClose, task, onSuccess }: TaskFormProps) {
             }
 
             if (task) {
+                formData.append('id', task.id);
                 formData.append('existingImage', task.image || '');
                 if (removeImage) formData.append('removeImage', 'true');
-
-            } else {
-
             }
 
+            const result = task ? await updateTask(formData) : await createTask(formData);
+            if (!result.success) {
+                toast.error(result.error);
+                return;
+            }
+            toast.success(task ? 'Tarea actualizada' : 'Tarea creada');
             onSuccess();
             onClose();
         } catch (error) {
             console.error('Error saving task:', error);
+            toast.error('Error al guardar la tarea');
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <Dialog open={isOpen} onOpenChange={onClose}>
+        <Dialog
+            open={isOpen}
+            onOpenChange={(open) => {
+                if (!open) onClose();
+            }}
+        >
             <DialogContent className="lg:w-xl md:w-full w-full max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>{task ? 'Editar Tarea' : 'Nueva Tarea'}</DialogTitle>
@@ -214,6 +218,7 @@ export function TaskForm({ isOpen, onClose, task, onSuccess }: TaskFormProps) {
 
                     <div className="space-y-2">
                         <FileInput
+                            key={`${task?.id ?? 'new'}-${isOpen}`}
                             accept="image/jpeg, image/png, image/gif, image/webp"
                             multiple={false}
                             onFilesSelected={(files) => {

@@ -43,15 +43,14 @@ export function TaskFilters({
     currentFilters,
 }: TaskFiltersProps) {
     const [searchTerm, setSearchTerm] = useState(currentFilters.search);
-    const debouncedSearch = useDebounce(searchTerm, 1000);
+    const debouncedSearch = useDebounce(searchTerm, 400);
 
-    // Sync local state when parent resets/overrides filters (e.g. clear-all)
     useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional prop→local sync; debounced field cannot use render-time adjustment
+        // Sincronizar término local cuando el padre resetea filtros (p. ej. vuelta atrás)
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- prop → estado local; debounce exige copia local
         setSearchTerm(currentFilters.search);
     }, [currentFilters.search]);
 
-    // Trigger onSearchChange when debounced value changes
     useEffect(() => {
         if (debouncedSearch !== currentFilters.search) {
             onSearchChange(debouncedSearch);
@@ -59,59 +58,53 @@ export function TaskFilters({
     }, [debouncedSearch, onSearchChange, currentFilters.search]);
 
     return (
-        <div className="grid grid-cols-12 gap-4 pb-8">
-            <div className="col-span-12 md:col-span-8 lg:col-span-8 space-y-2">
-                <label className="text-sm font-medium flex items-center gap-2">
-                    Buscar por título o descripción
-                </label>
-                <Searchbar
-                    placeholder="Escribe para buscar..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full"
-                />
-            </div>
+            <div className="flex flex-col py-4 gap-3 sm:flex-row sm:flex-nowrap sm:items-end sm:gap-4">
+                <div className="w-full min-w-0 space-y-2 sm:basis-1/2">
+                    <label className="text-sm font-medium flex items-center gap-2">
+                        Buscar por título o descripción
+                    </label>
+                    <Searchbar
+                        id="task-search"
+                        placeholder="Escribe para buscar..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full"
+                    />
+                </div>
+                <div className="w-full min-w-0 space-y-2 sm:basis-1/4">
+                    <label className="text-sm font-medium flex items-center gap-2">
+                        <Filter size={16} /> Estado
+                    </label>
+                    <Select value={currentFilters.status} onValueChange={onStatusChange}>
+                        <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Todos" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">Todos</SelectItem>
+                            <SelectItem value="todo">Pendiente</SelectItem>
+                            <SelectItem value="in-progress">En curso</SelectItem>
+                            <SelectItem value="review">En revisión</SelectItem>
+                            <SelectItem value="done">Completada</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
 
-            <div className='col-span-12 md:col-span-4 lg:col-span-4'>
-                <div className="grid grid-cols-12 gap-4">
-                    <div className="space-y-2 col-span-6">
-                        <label className="text-sm font-medium flex items-center gap-2">
-                            <Filter size={16} /> Estado
-                        </label>
-                        <Select value={currentFilters.status} onValueChange={onStatusChange}>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Todos" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">Todos</SelectItem>
-                                <SelectItem value="todo">Pendiente</SelectItem>
-                                <SelectItem value="in-progress">En curso</SelectItem>
-                                <SelectItem value="review">En revisión</SelectItem>
-                                <SelectItem value="done">Completada</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-
-                    <div className="space-y-2 col-span-6">
-                        <label className="text-sm font-medium flex items-center gap-2 truncate">
-                            Prioridad
-                        </label>
-                        <Select value={currentFilters.priority} onValueChange={onPriorityChange}>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Todas" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">Todas</SelectItem>
-                                <SelectItem value="low">Baja</SelectItem>
-                                <SelectItem value="medium">Media</SelectItem>
-                                <SelectItem value="high">Alta</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
+                <div className="w-full min-w-0 space-y-2 sm:basis-1/4">
+                    <label className="text-sm font-medium flex items-center gap-2 truncate">
+                        Prioridad
+                    </label>
+                    <Select value={currentFilters.priority} onValueChange={onPriorityChange}>
+                        <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Todas" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">Todas</SelectItem>
+                            <SelectItem value="low">Baja</SelectItem>
+                            <SelectItem value="medium">Media</SelectItem>
+                            <SelectItem value="high">Alta</SelectItem>
+                        </SelectContent>
+                    </Select>
                 </div>
             </div>
-
-        </div>
     );
 }
-
